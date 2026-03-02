@@ -1,0 +1,245 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Management | IEEE Admin Portal</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root { --primary: #0056b3; --primary-dark: #004494; --secondary: #8b5cf6; --secondary-dark: #7c3aed; --gray-50: #f9fafb; --gray-100: #f3f4f6; --gray-200: #e5e7eb; --gray-300: #d1d5db; --gray-400: #9ca3af; --gray-500: #6b7280; --gray-600: #4b5563; --gray-700: #374151; --gray-800: #1f2937; --gray-900: #111827; --sidebar-bg: #fff; --sidebar-hover: #1e293b; --success: #10b981; --warning: #f59e0b; --danger: #ef4444; --border-radius: 8px; --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05); --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); --transition: all 0.3s ease; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; background-color: var(--gray-50); color: var(--gray-800); line-height: 1.5; display: flex; height: 100vh; overflow: hidden; }
+
+    /* Sidebar Styles */
+    .sidebar { width: 280px; background: var(--sidebar-bg); color: white; display: flex; flex-direction: column; padding: 0; box-shadow: var(--shadow-md); z-index: 10; transition: var(--transition); }
+    .sidebar-header { padding: 24px 28px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 16px; }
+    .sidebar-header h2 { font-size: 22px; font-weight: 700; color: white; display: flex; align-items: center; gap: 10px; }
+    .sidebar-header h2 span { color: #3b82f6; }
+    .nav-links { list-style: none; padding: 0 16px; margin: 0; }
+    .nav-links li { margin-bottom: 8px; }
+    .nav-links a { display: flex; align-items: center; gap: 12px; text-decoration: none; color: #cbd5e1; font-size: 15px; font-weight: 500; padding: 12px 16px; border-radius: var(--border-radius); transition: var(--transition); }
+    .nav-links a:hover { background: var(--sidebar-hover); color: #fff; transform: translateX(4px); }
+    .nav-links a.active { background: var(--secondary); color: #fff; font-weight: 600; box-shadow: 0 4px 6px -1px rgba(139, 92, 246, 0.2); }
+    .nav-icon { width: 20px; text-align: center; }
+
+    /* Main Content Styles */
+    .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .header { background: white; padding: 20px 32px; box-shadow: var(--shadow-sm); display: flex; justify-content: space-between; align-items: center; z-index: 5; }
+    .header h1 { font-size: 24px; font-weight: 700; color: var(--gray-900); display: flex; align-items: center; gap: 12px; }
+    .header-actions { display: flex; align-items: center; gap: 16px; }
+    .user-profile { display: flex; align-items: center; gap: 12px; padding: 8px 16px; border-radius: var(--border-radius); cursor: pointer; transition: var(--transition); }
+    .user-profile:hover { background: var(--gray-100); }
+    .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; }
+    .content { flex: 1; padding: 32px; overflow-y: auto; }
+
+    /* Stats Cards */
+    .stats-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; margin-bottom: 32px; }
+    .stat-card { background: white; border-radius: var(--border-radius); padding: 24px; box-shadow: var(--shadow); display: flex; align-items: center; gap: 16px; transition: var(--transition); }
+    .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .stat-icon.users { background: rgba(139, 92, 246, 0.1); color: var(--secondary); }
+    .stat-icon.active { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+    .stat-icon.new { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+    .stat-info h3 { font-size: 14px; font-weight: 500; color: var(--gray-500); margin-bottom: 4px; }
+    .stat-value { font-size: 24px; font-weight: 700; color: var(--gray-900); }
+
+    /* Table Styling */
+    .table-container { background: white; border-radius: var(--border-radius); box-shadow: var(--shadow); overflow: hidden; }
+    .table-header { padding: 24px; border-bottom: 1px solid var(--gray-200); display: flex; justify-content: space-between; align-items: center; }
+    .table-header h2 { font-size: 18px; font-weight: 600; color: var(--gray-900); }
+    .table-actions { display: flex; gap: 12px; }
+    .btn { padding: 8px 16px; border-radius: var(--border-radius); font-size: 14px; font-weight: 500; cursor: pointer; transition: var(--transition); border: none; display: flex; align-items: center; gap: 8px; }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-outline { background: transparent; color: var(--gray-700); border: 1px solid var(--gray-300); }
+    .btn-outline:hover { background: var(--gray-50); }
+    table { width: 100%; border-collapse: collapse; }
+    thead { background: var(--gray-50); border-bottom: 1px solid var(--gray-200); }
+    th { text-align: left; padding: 16px 24px; font-size: 14px; font-weight: 600; color: var(--gray-700); text-transform: uppercase; letter-spacing: 0.5px; }
+    td { padding: 16px 24px; font-size: 14px; color: var(--gray-700); border-bottom: 1px solid var(--gray-100); }
+    tbody tr { transition: var(--transition); }
+    tbody tr:hover { background: var(--gray-50); }
+    .status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+    .status-active { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+    .status-inactive { background: rgba(107, 114, 128, 0.1); color: var(--gray-500); }
+    .role-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; background: rgba(139, 92, 246, 0.1); color: var(--secondary); }
+    .action-cell { display: flex; gap: 8px; }
+    .action-btn { width: 32px; height: 32px; border-radius: var(--border-radius); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition); border: none; color: var(--gray-600); background: transparent; }
+    .action-btn:hover { background: var(--gray-200); }
+    .action-btn.edit:hover { color: var(--primary); }
+    .action-btn.delete:hover { color: var(--danger); }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--gray-100); }
+    ::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--gray-400); }
+
+    /* Responsive */
+    @media (max-width: 1024px) { .sidebar { width: 240px; } }
+    @media (max-width: 768px) { body { flex-direction: column; } .sidebar { width: 100%; height: auto; flex-direction: row; padding: 0; } .sidebar-header { padding: 16px; border-bottom: none; margin-bottom: 0; } .nav-links { display: flex; padding: 0; overflow-x: auto; } .nav-links li { margin-bottom: 0; } .nav-links a { white-space: nowrap; } .content { padding: 20px; } .stats-container { grid-template-columns: 1fr; } }
+  </style>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-header">
+    <h1 style="color:black;">Admin Portal</h1>
+  </div>
+  <ul class="nav-links">
+    <li><a href="/admin/pendding"><span class="nav-icon">📄</span> Pending Articles</a></li>
+    <li><a href="/admin/approved"><span class="nav-icon">✅</span> Approved Articles</a></li>
+    <li><a href="/admin/rejected"><span class="nav-icon">❌</span> Rejected Articles</a></li>
+    <li><a href="/admin/users" class="active"><span class="nav-icon">👥</span> User Management</a></li>
+    <li><a href="#"><span class="nav-icon">⚙️</span> Settings</a></li>
+  </ul>
+</div>
+
+<div class="main">
+  <div class="header">
+    <h1><span>👥</span> User Management</h1>
+  </div>
+
+  <div class="content">
+    <div class="table-container">
+      <table>
+        <thead>
+        <tr>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Joined Date</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${users}">
+          <td th:text="${user.username}">admin123</td>
+          <td th:text="${user.email}">admin@example.com</td>
+          <td>
+            <span th:each="r : ${user.role}" th:if="${r.name != null}" class="role-badge" th:text="${r.name}"></span>
+          </td>
+          <td th:text="${#dates.format(user.joinedDate, 'yyyy-MM-dd')}">2023-09-20</td>
+          <td>
+              <span th:classappend="${user.status == 'Active'} ? 'status-badge status-active' : 'status-badge status-inactive'"
+                    th:text="${user.status}">Active</span>
+          </td>
+          <td class="action-cell">
+            <!-- Edit Button -->
+            <button class="action-btn edit"
+                    title="Edit Status"
+                    data-bs-toggle="modal"
+                    data-bs-target="#editStatusModal"
+                    th:data-id="${user.id}"
+                    th:data-status="${user.status}">
+              ✏️
+            </button>
+
+            <!-- Delete Button -->
+            <button type="button"
+                    class="action-btn delete"
+                    title="Delete User"
+                    data-bs-toggle="modal"
+                    th:attr="data-bs-target='#deleteModal__' + ${user.id}">
+              🗑️
+            </button>
+
+            <!-- Delete Modal -->
+            <div class="modal fade" th:id="'deleteModal__' + ${user.id}" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Confirm Deletion</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                  </div>
+                  <div class="modal-body">
+                    <p>
+                      Are you sure you want to delete
+                      <strong th:text="${user.username}">this user</strong>?
+                    </p>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form th:action="@{'/admin/users/delete/' + ${user.id}}" method="post">
+                      <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Status Modal -->
+<div class="modal fade" id="editStatusModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">Edit User Status</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <form id="editStatusForm" method="post" th:action="@{'/admin/users/status/' + ${editUserId}}">
+        <div class="modal-body">
+          <input type="hidden" id="editUserId" name="id" />
+          <div class="mb-3">
+            <label for="editStatus" class="form-label">Status</label>
+            <select id="editStatus" name="status" class="form-select" required>
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Update Status</button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+  const editButtons = document.querySelectorAll('.action-btn.edit');
+
+  editButtons.forEach(btn => {
+    btn.addEventListener('click', function() {
+      const id = this.getAttribute('data-id');
+      const status = this.getAttribute('data-status');
+
+      document.getElementById('editUserId').value = id;
+      document.getElementById('editStatus').value = status;
+
+      // dynamically update form action with the user id
+      document.getElementById('editStatusForm').setAttribute('action', '/admin/users/status/' + id);
+    });
+  });
+});
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin Register</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #4b6cb7, #182848);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 25px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 90%;
+            padding: 12px 15px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: 0.3s ease;
+        }
+
+        input[type="text"]:focus, input[type="password"]:focus {
+            border-color: #4b6cb7;
+            box-shadow: 0 0 5px rgba(75, 108, 183, 0.4);
+            outline: none;
+        }
+
+        button {
+            width: 95%;
+            padding: 12px;
+            background: linear-gradient(135deg, #4b6cb7, #182848);
+            border: none;
+            color: white;
+            font-size: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: 0.3s ease;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #5f7ed8, #223566);
+            transform: translateY(-2px);
+        }
+
+        .message {
+            margin-top: 15px;
+            color: green;
+            font-weight: 500;
+        }
+
+        p {
+            margin-top: 20px;
+            color: #444;
+        }
+
+        a {
+            color: #4b6cb7;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>👑 Admin Registration</h2>
+
+    <form th:action="@{/admin/register-html-page}" method="post">
+        <input type="text" name="username" placeholder="Enter username" required />
+        <input type="password" name="password" placeholder="Enter password" required />
+        <button type="submit">Register</button>
+    </form>
+
+    <p th:if="${message}" th:text="${message}" class="message"></p>
+
+    <p>Already have an account? <a th:href="@{/admin/login-page}">Login here</a></p>
+</div>
+
+</body>
+</html>

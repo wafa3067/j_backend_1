@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings | IEEE Admin Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+        --primary: #0056b3;
+        --primary-dark: #004494;
+        --secondary: #6b7280;
+        --secondary-dark: #4b5563;
+        --gray-50: #f9fafb;
+        --gray-100: #f3f4f6;
+        --gray-200: #e5e7eb;
+        --gray-300: #d1d5db;
+        --gray-400: #9ca3af;
+        --gray-500: #6b7280;
+        --gray-600: #4b5563;
+        --gray-700: #374151;
+        --gray-800: #1f2937;
+        --gray-900: #111827;
+        --sidebar-bg: #0f172a;
+        --sidebar-hover: #1e293b;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --border-radius: 8px;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --transition: all 0.3s ease;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+        background-color: var(--gray-50);
+        color: var(--gray-800);
+        line-height: 1.5;
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    /* Sidebar Styles */
+    .sidebar {
+        width: 280px;
+        background: var(--sidebar-bg);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+        box-shadow: var(--shadow-md);
+        z-index: 10;
+        transition: var(--transition);
+    }
+
+    .sidebar-header {
+        padding: 24px 28px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 16px;
+    }
+
+    .sidebar-header h2 {
+        font-size: 22px;
+        font-weight: 700;
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .sidebar-header h2 span {
+        color: #3b82f6;
+    }
+
+    .nav-links {
+        list-style: none;
+        padding: 0 16px;
+        margin: 0;
+    }
+
+    .nav-links li {
+        margin-bottom: 8px;
+    }
+
+    .nav-links a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+        color: #cbd5e1;
+        font-size: 15px;
+        font-weight: 500;
+        padding: 12px 16px;
+        border-radius: var(--border-radius);
+        transition: var(--transition);
+    }
+
+    .nav-links a:hover {
+        background: var(--sidebar-hover);
+        color: #fff;
+        transform: translateX(4px);
+    }
+
+    .nav-links a.active {
+        background: var(--secondary);
+        color: #fff;
+        font-weight: 600;
+        box-shadow: 0 4px 6px -1px rgba(107, 114, 128, 0.2);
+    }
+
+    .nav-icon {
+        width: 20px;
+        text-align: center;
+    }
+
+    /* Main Content Styles */
+    .main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .header {
+        background: white;
+        padding: 20px 32px;
+        box-shadow: var(--shadow-sm);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 5;
+    }
+
+    .header h1 {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--gray-900);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .user-profile {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 8px 16px;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .user-profile:hover {
+        background: var(--gray-100);
+    }
+
+    .user-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--primary);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+    }
+
+    .content {
+        flex: 1;
+        padding: 32px;
+        overflow-y: auto;
+    }
+
+    /* Settings Sections */
+    .settings-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 24px;
+        margin-bottom: 32px;
+    }
+
+    .settings-card {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 0;
+        box-shadow: var(--shadow);
+        transition: var(--transition);
+        overflow: hidden;
+    }
+
+    .settings-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .card-header {
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--gray-200);
+        background: var(--gray-50);
+    }
+
+    .card-header h3 {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--gray-900);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .card-body {
+        padding: 24px;
+    }
+
+    /* Form Elements */
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--gray-700);
+        margin-bottom: 8px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid var(--gray-300);
+        border-radius: var(--border-radius);
+        font-size: 14px;
+        transition: var(--transition);
+        background: white;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.1);
+    }
+
+    .form-text {
+        font-size: 12px;
+        color: var(--gray-500);
+        margin-top: 6px;
+    }
+
+    /* Toggle Switch */
+    .toggle-group {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+        padding: 12px 0;
+    }
+
+    .toggle-label {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--gray-700);
+    }
+
+    .toggle-description {
+        font-size: 13px;
+        color: var(--gray-500);
+        margin-top: 4px;
+    }
+
+    .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 24px;
+    }
+
+    .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: var(--gray-300);
+        transition: var(--transition);
+        border-radius: 24px;
+    }
+
+    .toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: var(--transition);
+        border-radius: 50%;
+    }
+
+    input:checked + .toggle-slider {
+        background-color: var(--success);
+    }
+
+    input:checked + .toggle-slider:before {
+        transform: translateX(26px);
+    }
+
+    /* Buttons */
+    .btn {
+        padding: 10px 20px;
+        border-radius: var(--border-radius);
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: var(--transition);
+        border: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-primary {
+        background: var(--primary);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: var(--primary-dark);
+    }
+
+    .btn-outline {
+        background: transparent;
+        color: var(--gray-700);
+        border: 1px solid var(--gray-300);
+    }
+
+    .btn-outline:hover {
+        background: var(--gray-50);
+    }
+
+    .btn-danger {
+        background: var(--danger);
+        color: white;
+    }
+
+    .btn-danger:hover {
+        background: #dc2626;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        margin-top: 24px;
+        padding-top: 20px;
+        border-top: 1px solid var(--gray-200);
+    }
+
+    /* Select Dropdown */
+    select.form-control {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+        background-position: right 8px center;
+        background-repeat: no-repeat;
+        background-size: 16px;
+        padding-right: 40px;
+    }
+
+    /* Danger Zone */
+    .danger-zone {
+        border: 1px solid var(--danger);
+        border-radius: var(--border-radius);
+        padding: 24px;
+        background: rgba(239, 68, 68, 0.02);
+    }
+
+    .danger-zone h4 {
+        color: var(--danger);
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .danger-zone p {
+        color: var(--gray-600);
+        font-size: 14px;
+        margin-bottom: 16px;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: var(--gray-100);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: var(--gray-300);
+        border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--gray-400);
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .sidebar {
+            width: 240px;
+        }
+        .settings-container {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        body {
+            flex-direction: column;
+        }
+        .sidebar {
+            width: 100%;
+            height: auto;
+            flex-direction: row;
+            padding: 0;
+        }
+        .sidebar-header {
+            padding: 16px;
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        .nav-links {
+            display: flex;
+            padding: 0;
+            overflow-x: auto;
+        }
+        .nav-links li {
+            margin-bottom: 0;
+        }
+        .nav-links a {
+            white-space: nowrap;
+        }
+        .content {
+            padding: 20px;
+        }
+        .settings-container {
+            grid-template-columns: 1fr;
+        }
+        .action-buttons {
+            flex-direction: column;
+        }
+    }
+  </style>
+</head>
+<body>
+<div class="sidebar">
+  <div class="sidebar-header">
+    <h2><span>IEEE</span> Admin Portal</h2>
+  </div>
+  <ul class="nav-links">
+    <li><a href="/admin/dashboard"><span class="nav-icon">📄</span> Pending Articles</a></li>
+    <li><a href="/admin/approved"><span class="nav-icon">✅</span> Approved Articles</a></li>
+    <li><a href="/admin/rejected"><span class="nav-icon">❌</span> Rejected Articles</a></li>
+    <li><a href="/admin/users"><span class="nav-icon">👥</span> User Management</a></li>
+    <li><a href="#" class="active"><span class="nav-icon">⚙️</span> Settings</a></li>
+  </ul>
+</div>
+
+<div class="main">
+  <div class="header">
+    <h1><span>⚙️</span> System Settings</h1>
+    <div class="header-actions">
+      <div class="user-profile">
+        <div class="user-avatar">AD</div>
+        <div>
+          <div class="user-name">Admin User</div>
+          <div class="user-role" style="font-size: 12px; color: var(--gray-500);">Administrator</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="settings-container">
+      <!-- General Settings -->
+      <div class="settings-card">
+        <div class="card-header">
+          <h3><span>🔧</span> General Settings</h3>
+        </div>
+        <div class="card-body">
+          <div class="form-group">
+            <label for="siteName">Site Name</label>
+            <input type="text" id="siteName" class="form-control" value="IEEE Admin Portal">
+            <div class="form-text">The name displayed in the header and browser tab</div>
+          </div>
+
+          <div class="form-group">
+            <label for="adminEmail">Admin Email</label>
+            <input type="email" id="adminEmail" class="form-control" value="admin@ieee.org">
+            <div class="form-text">Primary email for system notifications</div>
+          </div>
+
+          <div class="form-group">
+            <label for="timezone">Timezone</label>
+            <select id="timezone" class="form-control">
+              <option value="utc">UTC</option>
+              <option value="est" selected>Eastern Time (EST)</option>
+              <option value="pst">Pacific Time (PST)</option>
+              <option value="cet">Central European Time (CET)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Article Settings -->
+      <div class="settings-card">
+        <div class="card-header">
+          <h3><span>📄</span> Article Management</h3>
+        </div>
+        <div class="card-body">
+          <div class="toggle-group">
+            <div>
+              <div class="toggle-label">Auto-assign Reviewers</div>
+              <div class="toggle-description">Automatically assign reviewers to new submissions</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="toggle-group">
+            <div>
+              <div class="toggle-label">Email Notifications</div>
+              <div class="toggle-description">Send email alerts for new submissions</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="toggle-group">
+            <div>
+              <div class="toggle-label">Auto-reject After</div>
+              <div class="toggle-description">Automatically reject articles pending for too long</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label for="maxFileSize">Maximum File Size (MB)</label>
+            <input type="number" id="maxFileSize" class="form-control" value="10">
+            <div class="form-text">Maximum allowed file size for article submissions</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- User Settings -->
+      <div class="settings-card">
+        <div class="card-header">
+          <h3><span>👥</span> User Settings</h3>
+        </div>
+        <div class="card-body">
+          <div class="toggle-group">
+            <div>
+              <div class="toggle-label">User Registration</div>
+              <div class="toggle-description">Allow new users to register</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="toggle-group">
+            <div>
+              <div class="toggle-label">Email Verification</div>
+              <div class="toggle-description">Require email verification for new users</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label for="sessionTimeout">Session Timeout (minutes)</label>
+            <input type="number" id="sessionTimeout" class="form-control" value="60">
+            <div class="form-text">User session timeout duration</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notification Settings -->
+      <div class="settings-card">
+        <div class="card-header">
+          <h3><span>🔔</span> Notifications</h3>
+        </div>
+        <div class="card-body">
+          <div class="toggle-group">
+            <div>
+              <div class="toggle-label">Email Notifications</div>
+              <div class="toggle-description">Receive email alerts for system events</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="toggle-group">
+            <div>
+              <div class="toggle-label">Desktop Notifications</div>
+              <div class="toggle-description">Show browser notifications</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label for="notificationFrequency">Notification Frequency</label>
+            <select id="notificationFrequency" class="form-control">
+              <option value="immediate">Immediately</option>
+              <option value="hourly" selected>Hourly Digest</option>
+              <option value="daily">Daily Digest</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Danger Zone -->
+    <div class="settings-card">
+      <div class="card-header">
+        <h3><span>⚠️</span> Danger Zone</h3>
+      </div>
+      <div class="card-body">
+        <div class="danger-zone">
+          <h4><span>🗑️</span> Clear All Data</h4>
+          <p>Permanently delete all articles, users, and system data. This action cannot be undone.</p>
+          <button class="btn btn-danger">
+            <span>🗑️</span> Clear All Data
+          </button>
+        </div>
+
+        <div class="danger-zone" style="margin-top: 20px;">
+          <h4><span>🔁</span> Reset System</h4>
+          <p>Reset all settings to their default values. This will not delete user data.</p>
+          <button class="btn btn-outline">
+            <span>🔁</span> Reset to Defaults
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <button class="btn btn-outline">
+        <span>↩️</span> Cancel
+      </button>
+      <button class="btn btn-primary">
+        <span>💾</span> Save Changes
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Simple JavaScript for settings page
+  document.addEventListener('DOMContentLoaded', function() {
+      // Save button functionality
+      const saveBtn = document.querySelector('.btn-primary');
+      saveBtn.addEventListener('click', function() {
+          this.innerHTML = '<span>⏳</span> Saving...';
+          setTimeout(() => {
+              this.innerHTML = '<span>💾</span> Save Changes';
+              alert('Settings saved successfully!');
+          }, 1000);
+      });
+
+      // Clear data confirmation
+      const clearBtn = document.querySelector('.btn-danger');
+      clearBtn.addEventListener('click', function() {
+          if (confirm('⚠️ WARNING: This will permanently delete ALL data. This action cannot be undone. Are you absolutely sure?')) {
+              if (confirm('This is your final warning. All articles, users, and settings will be permanently deleted. Continue?')) {
+                  alert('Data clearance initiated. This may take a few minutes.');
+              }
+          }
+      });
+
+      // Reset to defaults
+      const resetBtn = document.querySelectorAll('.btn-outline')[1];
+      resetBtn.addEventListener('click', function() {
+          if (confirm('Reset all settings to default values?')) {
+              alert('Settings reset to defaults.');
+          }
+      });
+  });
+</script>
+</body>
+</html>

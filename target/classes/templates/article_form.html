@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Article</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+        }
+        label {
+            font-weight: bold;
+        }
+        input, textarea {
+            width: 60%;
+            padding: 6px;
+            margin-top: 4px;
+            margin-bottom: 12px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #0077cc;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #005fa3;
+        }
+        .contributor-box {
+            border: 1px solid #ccc;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+<h2>Upload Article</h2>
+
+<form th:action="@{/api/upload-form}" method="post" enctype="multipart/form-data">
+    <!-- Basic Fields -->
+    <label>Prefix:</label><br>
+    <input type="text" name="prefix"><br>
+
+    <label>Title:</label><br>
+    <input type="text" name="title" required><br>
+
+    <label>Subtitle:</label><br>
+    <input type="text" name="subtitle"><br>
+
+    <label>Section:</label><br>
+    <input type="text" name="section"><br>
+
+    <label>Previously Published:</label><br>
+    <input type="text" name="previousPublished"><br>
+
+    <label>File Type:</label><br>
+    <input type="text" name="fileType"><br>
+
+    <label>Referenced URL:</label><br>
+    <input type="text" name="refrencedUrl"><br>
+
+    <label>Abstract:</label><br>
+    <textarea name="abstracts" rows="4" cols="40"></textarea><br>
+
+    <label>Keywords:</label><br>
+    <input type="text" name="keywords" placeholder="e.g. AI, Data Science"><br>
+
+    <label>Reference Text:</label><br>
+    <textarea name="referenceText" rows="4" cols="40"></textarea><br>
+
+    <label>Text Style:</label><br>
+    <input type="text" name="textStyle"><br>
+
+    <label>Text Stylic:</label><br>
+    <input type="text" name="textStylic"><br>
+
+    <label>Comment:</label><br>
+    <textarea name="comment" rows="3" cols="40"></textarea><br>
+
+    <label>Crosspending Contact:</label><br>
+    <input type="text" name="crosspendingContact"><br>
+
+    <label>Copyright:</label><br>
+    <input type="text" name="copyright"><br>
+
+    <label>Privacy Policy:</label><br>
+    <input type="text" name="privacypolicy"><br>
+
+    <!-- File Upload -->
+    <label>Upload PDF File:</label><br>
+    <input type="file" name="pdfFile" accept="application/pdf" required><br><br>
+
+    <!-- Contributors List -->
+    <h3>Contributors</h3>
+    <div id="contributors-container">
+        <div class="contributor-box">
+            <label>Name:</label><br>
+            <input type="text" name="contributorsList[0].name"><br>
+            <label>Email:</label><br>
+            <input type="email" name="contributorsList[0].email"><br>
+            <label>Affiliation:</label><br>
+            <input type="text" name="contributorsList[0].affiliation"><br>
+        </div>
+    </div>
+
+    <button type="button" onclick="addContributor()">➕ Add Another Contributor</button><br><br>
+
+    <!-- Submit -->
+    <button type="submit">Submit Article</button>
+</form>
+
+<script>
+    let contributorIndex = 1;
+    function addContributor() {
+        const container = document.getElementById('contributors-container');
+        const box = document.createElement('div');
+        box.className = 'contributor-box';
+        box.innerHTML = `
+            <label>Name:</label><br>
+            <input type="text" name="contributorsList[${contributorIndex}].name"><br>
+            <label>Email:</label><br>
+            <input type="email" name="contributorsList[${contributorIndex}].email"><br>
+            <label>Affiliation:</label><br>
+            <input type="text" name="contributorsList[${contributorIndex}].affiliation"><br>
+        `;
+        container.appendChild(box);
+        contributorIndex++;
+    }
+</script>
+
+</body>
+</html>
